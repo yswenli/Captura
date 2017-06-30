@@ -10,11 +10,16 @@ We use [AppVeyor](https://ci.appveyor.com) for Continuous Integration.
 When a commit is pushed to the GitHub repository, AppVeyor clones the repo and builds/tests/deploys it.
 
 ## Build
-The build output is packaged as a Zip file.
-License files, BASS and BassMix dlls are included in the build output.
+The build output along with dependencies is packaged as a Zip file.
+License files, BASS and BassMix dlls are downloaded and included in the build output.
 
 Release builds include the main exe, dll files and config file.
-Debug build include PDB (Symbol Database Files) and XML documentation files in addition to those in Release builds.
+Debug builds include PDB (Symbol Database Files) and XML documentation files in addition to those in Release builds.
+
+## Test
+ScreenShots of `captura.ui.exe` are taken using `captura shot`.
+
+On Tag builds, the ScreenShots on the website are updated.
 
 ## Deploy
 AppVeyor automates the Release process.

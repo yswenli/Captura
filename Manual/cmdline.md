@@ -68,10 +68,11 @@ Takes a screenshot
 
 ### Valid arguments
 
-Argument   | Description
------------|-------------------------------------
-`--cursor` | Include cursor in the screenshot
-`--source` | The source to take screenshot of. See [here](#using-the-source-argument).
+Argument         | Description
+-----------------|-------------------------------------
+`--cursor`       | Include cursor in the screenshot
+`--source`       | The source to take screenshot of. See [here](#using-the-source-argument).
+`-f` or `--file` | Output file path.
 
 e.g. Take a screenshot containing cursor.
 
@@ -102,6 +103,7 @@ Argument              | Description
 `--encoder`           | The video encoder to use. See [here](#using-the-encoder-argument).
 `--vq`                | Video Quality (1 to 100) (**Default** is 70).
 `--aq`                | Audio Quality (1 to 100) (**Default** is 50).
+`-f` or `--file`      | Output file path.
 
 e.g. Record 10 seconds with cursor and keystrokes and audio from first speaker output.
 
