@@ -1,7 +1,10 @@
-﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
+﻿using System;
+using DSize = System.Drawing.Size;
+using WSize = System.Windows.Size;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Captura.Loc;
+using Captura.Models;
 
 namespace Captura
 {
@@ -13,70 +16,35 @@ namespace Captura
                 Command.Execute(null);
         }
 
-        public static void WriteToClipboard(this string S)
+        public static async Task UploadImage(this IBitmapImage Bitmap)
         {
-            if (S == null)
-                return;
+            var uploadWriter = ServiceProvider.Get<ImageUploadWriter>();
 
-            Clipboard.SetText(S);
-        }
+            var settings = ServiceProvider.Get<Settings>();
 
-        public static Rectangle Even(this Rectangle Rect)
-        {
-            if (Rect.Width % 2 == 1)
-                --Rect.Width;
+            var response = await uploadWriter.Save(Bitmap, settings.ScreenShots.ImageFormat);
 
-            if (Rect.Height % 2 == 1)
-                --Rect.Height;
-
-            return Rect;
-        }
-
-        static GraphicsPath RoundedRect(RectangleF bounds, int radius)
-        {
-            var diameter = radius * 2;
-            var arc = new RectangleF(bounds.Location, new Size(diameter, diameter));
-            var path = new GraphicsPath();
-
-            if (radius == 0)
+            switch (response)
             {
-                path.AddRectangle(bounds);
-                return path;
-            }
+                case Exception ex:
+                    var loc = ServiceProvider.Get<ILocalizationProvider>();
+                    ServiceProvider.MessageProvider.ShowException(ex, loc.ImageUploadFailed);
+                    break;
 
-            // top left arc  
-            path.AddArc(arc, 180, 90);
-
-            // top right arc  
-            arc.X = bounds.Right - diameter;
-            path.AddArc(arc, 270, 90);
-
-            // bottom right arc  
-            arc.Y = bounds.Bottom - diameter;
-            path.AddArc(arc, 0, 90);
-
-            // bottom left arc 
-            arc.X = bounds.Left;
-            path.AddArc(arc, 90, 90);
-
-            path.CloseFigure();
-            return path;
-        }
-
-        public static void DrawRoundedRectangle(this Graphics Graphics, Pen Pen, RectangleF Bounds, int CornerRadius)
-        {
-            using (var path = RoundedRect(Bounds, CornerRadius))
-            {
-                Graphics.DrawPath(Pen, path);
+                case UploadResult uploadResult:
+                    uploadResult.Url.WriteToClipboard();
+                    break;
             }
         }
 
-        public static void FillRoundedRectangle(this Graphics Graphics, Brush Brush, RectangleF Bounds, int CornerRadius)
+        public static DSize ToDrawingSize(this WSize Size)
         {
-            using (var path = RoundedRect(Bounds, CornerRadius))
-            {
-                Graphics.FillPath(Brush, path);
-            }
+            return new DSize((int)Math.Round(Size.Width), (int)Math.Round(Size.Height));
+        }
+
+        public static WSize ToWpfSize(this DSize Size)
+        {
+            return new WSize(Size.Width, Size.Height);
         }
     }
 }

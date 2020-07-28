@@ -1,47 +1,69 @@
-﻿using Captura.Properties;
-using Captura.ViewModels;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+﻿using System;
+using System.Threading.Tasks;
+using Captura.Loc;
 
 namespace Captura.Models
 {
-    public class DiskWriter : IImageWriterItem
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class DiskWriter : NotifyPropertyChanged, IImageWriterItem
     {
-        DiskWriter() { }
+        readonly ISystemTray _systemTray;
+        readonly IMessageProvider _messageProvider;
+        readonly Settings _settings;
+        readonly ILocalizationProvider _loc;
+        readonly IRecentList _recentList;
 
-        public static DiskWriter Instance { get; } = new DiskWriter();
+        public DiskWriter(ISystemTray SystemTray,
+            IMessageProvider MessageProvider,
+            Settings Settings,
+            ILocalizationProvider Loc,
+            IRecentList RecentList)
+        {
+            _systemTray = SystemTray;
+            _messageProvider = MessageProvider;
+            _settings = Settings;
+            _loc = Loc;
+            _recentList = RecentList;
 
-        public void Save(Bitmap Image, ImageFormat Format, string FileName, TextLocalizer Status, RecentViewModel Recents)
+            Loc.LanguageChanged += L => RaisePropertyChanged(nameof(Display));
+        }
+
+        public Task Save(IBitmapImage Image, ImageFormats Format, string FileName)
         {
             try
             {
-                Settings.Instance.EnsureOutPath();
+                var extension = Format.ToString().ToLower();
 
-                var extension = Format.Equals(ImageFormat.Icon) ? "ico"
-                    : Format.Equals(ImageFormat.Jpeg) ? "jpg"
-                    : Format.ToString().ToLower();
-
-                var fileName = FileName ?? Path.Combine(Settings.Instance.OutPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "." + extension);
+                var fileName = _settings.GetFileName(extension, FileName);
 
                 Image.Save(fileName, Format);
-                Status.LocalizationKey = nameof(Resources.ImgSavedDisk);
-                Recents.Add(fileName, RecentItemType.Image, false);
+                
+                _recentList.Add(new FileRecentItem(fileName, RecentFileType.Image));
 
-                if (Settings.Instance.CopyOutPathToClipboard)
+                // Copy path to clipboard only when clipboard writer is off
+                if (_settings.CopyOutPathToClipboard && !ServiceProvider.Get<ClipboardWriter>().Active)
                     fileName.WriteToClipboard();
 
-                ServiceProvider.SystemTray.ShowScreenShotNotification(fileName);
+                _systemTray.ShowScreenShotNotification(fileName);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                ServiceProvider.Messenger.ShowError(nameof(Resources.NotSaved) + $"\n\n{E}");
-
-                Status.LocalizationKey = nameof(Resources.NotSaved);
+                _messageProvider.ShowException(e, _loc.NotSaved);
             }
+
+            return Task.CompletedTask;
         }
 
-        public override string ToString() => Resources.Disk;
+        public string Display => _loc.Disk;
+
+        bool _active;
+
+        public bool Active
+        {
+            get => _active;
+            set => Set(ref _active, value);
+        }
+
+        public override string ToString() => Display;
     }
 }

@@ -1,10 +1,22 @@
+# Build Output
 bin/
 obj/
+
+# NuGet
+*.nupkg
 packages/
-publish/
-temp/
-Output/
+
+# Visual Studio
 .vs/
+.vscode/
+publish/
+TestResults/
 *.suo
 *.user
-*.nupkg
+
+# Cake
+/tools
+
+/temp/
+/dist/
+*.pfx

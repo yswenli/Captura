@@ -2,34 +2,24 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>captura</id>
-    <version>3.0.0</version>
+    <version>8.0.0</version>
     <title>Captura</title>
     <authors>Mathew Sachin</authors>
     <projectUrl>https://MathewSachin.github.io/Captura</projectUrl>
     <projectSourceUrl>https://github.com/MathewSachin/Captura</projectSourceUrl>
-    <iconUrl>https://raw.githubusercontent.com/MathewSachin/Captura/master/src/Captura/Logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/MathewSachin/Captura/master/src/Captura/Images/Logo.png</iconUrl>
     <licenseUrl>https://github.com/MathewSachin/Captura/blob/master/LICENSE.md</licenseUrl>
     <packageSourceUrl>https://github.com/MathewSachin/Captura/tree/master/choco</packageSourceUrl>
     <bugTrackerUrl>https://github.com/MathewSachin/Captura/issues</bugTrackerUrl>
-    <docsUrl>https://github.com/MathewSachin/Captura/wiki</docsUrl>
-    <mailingListUrl>https://gitter.im/MathewSachin/Screna</mailingListUrl>
-    <copyright>(c) 2017 Mathew Sachin</copyright>
+    <docsUrl>https://MathewSachin.github.io/Captura</docsUrl>
+    <mailingListUrl>https://gitter.im/MathewSachin/Captura</mailingListUrl>
+    <copyright>(c) 2018 Mathew Sachin</copyright>
     <tags>captura screen capture recording loopback screenshot screencast</tags>
     <summary>Capture Screen/Audio/Cursor/Clicks/Keystrokes</summary>
     <description>
 Captura is an application to capture Screen/Audio/Cursor/Clicks/Keystrokes.
-
-## Features
-- Take ScreenShots
-- Capture ScreenCasts (Avi/Gif/Mp4)
-- Capture with/without Mouse Cursor
-- Capture Specific Regions or Windows
-- Capture Mouse Clicks or Keystrokes
-- Record Audio from Microphone **AND/OR** Speaker Output (Wasapi Loopback)
-
-Download ffmpeg.exe and add to path for even more features.
     </description>
-    <releaseNotes>[Changelog](https://mathewsachin.github.io/Captura/Changelog)</releaseNotes>
+    <releaseNotes>[Changelog](https://MathewSachin.github.io/Captura/changelog)</releaseNotes>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

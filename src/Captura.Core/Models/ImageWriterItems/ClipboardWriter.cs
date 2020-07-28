@@ -1,23 +1,45 @@
-﻿using Captura.Properties;
-using Captura.ViewModels;
-using Screna;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Threading.Tasks;
+using Captura.Loc;
 
 namespace Captura.Models
 {
-    public class ClipboardWriter : IImageWriterItem
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class ClipboardWriter : NotifyPropertyChanged, IImageWriterItem
     {
-        ClipboardWriter() { }
+        readonly ISystemTray _systemTray;
+        readonly IClipboardService _clipboard;
+        readonly ILocalizationProvider _loc;
 
-        public static ClipboardWriter Instance { get; } = new ClipboardWriter();
-
-        public void Save(Bitmap Image, ImageFormat Format, string FileName, TextLocalizer Status, RecentViewModel Recents)
+        public ClipboardWriter(ISystemTray SystemTray,
+            ILocalizationProvider Loc,
+            IClipboardService Clipboard)
         {
-            Image.WriteToClipboard(Format.Equals(ImageFormat.Png));
-            Status.LocalizationKey = nameof(Resources.ImgSavedClipboard);
+            _systemTray = SystemTray;
+            _loc = Loc;
+            _clipboard = Clipboard;
+
+            Loc.LanguageChanged += L => RaisePropertyChanged(nameof(Display));
         }
 
-        public override string ToString() => Resources.Clipboard;
+        public Task Save(IBitmapImage Image, ImageFormats Format, string FileName)
+        {
+            _clipboard.SetImage(Image);
+
+            _systemTray.ShowNotification(new TextNotification(_loc.ImgSavedClipboard));
+
+            return Task.CompletedTask;
+        }
+
+        public string Display => _loc.Clipboard;
+
+        bool _active;
+
+        public bool Active
+        {
+            get => _active;
+            set => Set(ref _active, value);
+        }
+
+        public override string ToString() => Display;
     }
 }

@@ -4,12 +4,59 @@
     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    <Style TargetType="xctk:IntegerUpDown">
+
+    <Style x:Key="TextColor" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource WindowText}"/>
+    </Style>
+
+    <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource {x:Type xctk:IntegerUpDown}}">
         <Setter Property="Minimum" Value="0"/>
         <Setter Property="Padding" Value="0,0,5,0"/>
     </Style>
-    <Style TargetType="xctk:ColorPicker">
+
+    <Style TargetType="Path">
+        <Setter Property="Fill" Value="{DynamicResource ModernButtonText}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Fill" Value="{DynamicResource ButtonTextDisabled}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style TargetType="xctk:ColorPicker" BasedOn="{StaticResource {x:Type xctk:ColorPicker}}">
         <Setter Property="ColorMode" Value="ColorCanvas"/>
         <Setter Property="ShowAdvancedButton" Value="False"/>
+    </Style>
+    
+    <Style TargetType="xctk:SplitButton" BasedOn="{StaticResource {x:Type xctk:SplitButton}}">
+        <Setter Property="Foreground" Value="{DynamicResource ModernButtonText}"/>
+    </Style>
+
+    <Style TargetType="xctk:DropDownButton" BasedOn="{StaticResource {x:Type xctk:DropDownButton}}">
+        <Setter Property="Foreground" Value="{DynamicResource ModernButtonText}"/>
+    </Style>
+
+    <Style TargetType="TabItem">
+        <Setter Property="Foreground" Value="{DynamicResource ItemText}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid Name="Panel"
+                          Background="Transparent">
+                        <ContentPresenter Content="{TemplateBinding Header}"
+                                          Margin="10,2"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" 
+                                 Value="True">
+                            <Setter TargetName="Panel"
+                                    Property="Background"
+                                    Value="{DynamicResource Accent}" />
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

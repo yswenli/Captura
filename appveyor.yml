@@ -1,53 +1,85 @@
-version: 2.0.{build}
+version: 0.0.{build}
 
-image: Visual Studio 2017
+branches:
+  except:
+    - l10n_master # Crowdin
+    - gh-pages # Website
+
+image: Visual Studio 2019
 
 configuration:
 - Debug
 - Release
 
+# Used in build.cake
 environment:
-  access_token:
-    secure: c1r9fMnxBX4DW0SvZ4V/5Nucdi8pzA2YiQ/wsiyfjIY19q4RyKCYZTtU+2YQbiLT
+  imgur_client_id:
+    secure: Y/2WUSisk7oLSQNY1YzUxw==
+  yt_client_id:
+    secure: CPwUWOhTyZ2IiE+lvVilTKQz1h8sbn7FmkTJvtTlY6mJf2pDlfDhFmhDk1i47M9OPnD4y8a8BlB6yfkpVt/0U/PODAXPzFR0QuOWIfJvltc=
+  yt_client_secret:
+    secure: fsl/BRldjlmEJCroWa0iqw5tAxbGx84BbHT3BpzaeX4=
+  choco_key:
+    secure: h5jOVeiDmjLnF3EotkOhBFJharX/9TWx6OWykiXn30pWSIfVjSvAaCJM1Y48zjXr
+  git_key:
+    secure: eRA1NCG/iXaLTQaBbe2X5Tpje+2Hvk3WOPEP3ZLPFMqW7ZS0ZMTb4UXpw7w59pbc
 
 install:
-- ps: appveyor/Install.ps1
+  - dotnet tool install -g Cake.Tool --version 0.32.1
+  - choco install innosetup -y --no-progress
 
-cache:
-  # preserve "packages" directory but reset if packages.config is modified
-  - src\packages -> **\packages.config
+# Build using Cake
+build_script:
+  - ps: >-
+      $tag = $env:APPVEYOR_REPO_TAG_NAME
 
-before_build:
-  - ps: appveyor/Update-Version.ps1
+      if ($tag -ne $null)
+      {
+        $env:prerelease = $tag.Contains("-")
 
-build:
-  parallel: true
-  project: src\Captura.sln
-  verbosity: minimal
-  publish_nuget: true
-  publish_nuget_symbols: true
+        if ($tag -match "^build-number-")
+        {
+          Write-Host "Build number tag is skipped"
+          Exit-AppveyorBuild
+        }
+        else 
+        {
+          dotnet-cake --target=CI --configuration=$env:CONFIGURATION --build_version=$tag
+        }
+      }
+      else
+      {
+        $version = "v0.0." + $env:APPVEYOR_BUILD_NUMBER
 
-after_build:
-  - ps: appveyor/Pack-Release.ps1
+        dotnet-cake --target=CI --configuration=$env:CONFIGURATION --build_version=$version
+      }
 
-  - ps: appveyor/Choco.ps1
-
-after_test:
-  - ps: appveyor/Update-ScreenShots.ps1
+test: off
 
 artifacts:
-  - path: Output/Captura-$(configuration).zip
-    name: Captura.zip
+  - path: temp/Captura-Portable.zip
+    name: Portable
+  - path: temp/Captura-Setup.exe
+    name: Setup
+  - path: temp/captura.*.nupkg
+    name: Chocolatey
 
 deploy:
-  provider: GitHub
-  tag: $(APPVEYOR_REPO_TAG_NAME)
-  release: Captura v$(AppVersion)
-  description: "[Changelog](https://mathewsachin.github.io/Captura/Changelog)"
-  auth_token:
-    secure: 0wnIqpTY1N2oq6WQS9O5Mow0LA43Qo5ZnvuRLrpA/Lah675ffhF16SGcpa7B+Iou
-  artifact: Captura.zip
-  draft: true
-  on:
-    configuration: Release
-    appveyor_repo_tag: true
+  - provider: GitHub
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    release: Captura $(APPVEYOR_REPO_TAG_NAME)
+    prerelease: $(prerelease)
+    description: "[Changelog](https://github.com/MathewSachin/Captura/tree/master/docs/Changelogs)"
+    auth_token: $(git_key)
+    artifact: Portable, Setup
+    on:
+      configuration: Release
+      appveyor_repo_tag: true
+
+  - provider: NuGet
+    server: https://chocolatey.org
+    api_key: $(choco_key)
+    artifact: Chocolatey
+    on:
+      configuration: Release
+      appveyor_repo_tag: true

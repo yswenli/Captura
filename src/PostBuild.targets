@@ -1,0 +1,47 @@
+<Project>
+  <PropertyGroup>
+    <RootDir>$(MSBuildThisFileDirectory)/..</RootDir>
+    <DoMoveLibs>False</DoMoveLibs>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration) != 'Debug'">
+    <DoMoveLibs>True</DoMoveLibs>
+    <LibFolderName>lib/</LibFolderName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Copy License files -->
+    <Content Include="$(RootDir)/licenses/*.txt">
+      <Visible>False</Visible>
+      <Link>licenses/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="$(MSBuildThisFileDirectory)/Captura.Loc/Languages/*.json">
+      <Visible>False</Visible>
+      <Link>Languages/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Move Libraries to lib folder -->
+  <Target Name="MoveLibs" AfterTargets="Build" Condition="$(DoMoveLibs)">
+    <PropertyGroup>
+      <CopyDestionationPath>$(OutputPath)/$(LibFolderName)</CopyDestionationPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <LibFiles Include="$(OutputPath)*.dll" />
+      <PdbFiles Include="$(OutputPath)*.pdb" />
+      <XmlDocFiles Include="$(OutputPath)*.xml" />
+    </ItemGroup>
+
+    <Message Text="Moving Libraries to lib folder" Importance="High" />
+
+    <Move SourceFiles="@(LibFiles)" 
+          DestinationFolder="$(CopyDestionationPath)" />
+
+    <Delete Files="@(PdbFiles)" />
+    <Delete Files="@(XmlDocFiles)" />
+  </Target>
+</Project>

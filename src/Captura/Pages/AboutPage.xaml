@@ -1,0 +1,108 @@
+﻿<Page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:captura="clr-namespace:Captura"
+      x:Class="Captura.AboutPage"
+      Title="{Binding About, Source={StaticResource Loc}, Mode=OneWay}"
+      DataContext="{Binding AboutViewModel, Source={StaticResource ServiceLocator}}">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Hyperlink" BasedOn="{StaticResource {x:Type Hyperlink}}">
+                <Setter Property="Command" Value="{Binding HyperlinkCommand}"/>
+            </Style>
+            <Style TargetType="captura:ModernButton" BasedOn="{StaticResource IconButton}"/>
+        </Grid.Resources>
+        <ScrollViewer>
+            <StackPanel MinWidth="150"
+                        Margin="10">
+                <DockPanel>
+                    <captura:StatusBar DockPanel.Dock="Bottom"
+                                       Margin="7,3"
+                                       Opacity="0.9"/>
+
+                    <TextBlock TextWrapping="Wrap"
+                               LineHeight="30"
+                               Style="{StaticResource TextColor}">
+                        <Run FontSize="20" Text="Captura"/> <Run Text="{Binding AppVersion, Mode=OneWay}"/><LineBreak/>
+                        © <Run Text="{Binding Year, Source={x:Static sys:DateTime.Now}, Mode=OneWay}"/> <Hyperlink CommandParameter="https://github.com/MathewSachin">Mathew Sachin</Hyperlink>
+                    </TextBlock>
+                </DockPanel>
+
+                <WrapPanel HorizontalAlignment="Center">
+                    <captura:ModernButton Content="GitHub"
+                                          IconData="{Binding Icons.GitHub, Source={StaticResource ServiceLocator}}"
+                                          Command="{Binding HyperlinkCommand}"
+                                          CommandParameter="https://github.com/MathewSachin/Captura/"/>
+
+                    <captura:ModernButton Content="{Binding Donate, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.PayPal, Source={StaticResource ServiceLocator}}"
+                                          Command="{Binding HyperlinkCommand}"
+                                          CommandParameter="https://www.paypal.me/MathewSachin"/>
+
+                    <captura:ModernButton Content="{Binding Website, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.Web, Source={StaticResource ServiceLocator}}"
+                                          Command="{Binding HyperlinkCommand}"
+                                          CommandParameter="https://MathewSachin.github.io/Captura"/>
+                </WrapPanel>
+
+                <GridSplitter Height="3"
+                              IsEnabled="False"
+                              Margin="0,10"/>
+
+                <WrapPanel HorizontalAlignment="Center">
+                    <captura:ModernButton Content="{Binding WantToTranslate, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.Translate, Source={StaticResource ServiceLocator}}"
+                                          Command="{Binding HyperlinkCommand}"
+                                          CommandParameter="https://mathewsachin.github.io/Captura/translation"/>
+
+                    <captura:ModernButton Content="{Binding Changelog, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.History, Source={StaticResource ServiceLocator}}"
+                                          Command="{Binding HyperlinkCommand}"
+                                          CommandParameter="https://mathewsachin.github.io/Captura/changelog"/>
+                </WrapPanel>
+
+                <WrapPanel HorizontalAlignment="Center">
+                    <captura:ModernButton Content="{Binding ViewLicenses, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.NewFile, Source={StaticResource ServiceLocator}}"
+                                          Command="GoToPage"
+                                          CommandParameter="/Pages/LicensesPage.xaml"/>
+
+                    <captura:ModernButton Content="{Binding ViewCrashLogs, Source={StaticResource Loc}, Mode=OneWay}"
+                                          IconData="{Binding Icons.Error, Source={StaticResource ServiceLocator}}"
+                                          Command="GoToPage"
+                                          CommandParameter="/Pages/CrashLogsPage.xaml"/>
+                </WrapPanel>
+
+                <Label Margin="0,15,0,5">
+                    <TextBlock Text="{Binding Tools, Source={StaticResource Loc}, Mode=OneWay}"/>
+                </Label>
+                
+                <WrapPanel Margin="3">
+                    <Button ToolTip="{Binding Trim, Source={StaticResource Loc}, Mode=OneWay}"
+                            Padding="5"
+                            Margin="0,0,10,10"
+                            Click="OpenAudioVideoTrimmer">
+                        <Path Data="{Binding Icons.Trim, Source={StaticResource ServiceLocator}}"
+                              Width="15"
+                              Height="15"
+                              Stretch="Uniform"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                    </Button>
+
+                    <Button ToolTip="{Binding UploadToImgur, Source={StaticResource Loc}, Mode=OneWay}"
+                            Padding="5"
+                            Margin="0,0,10,10"
+                            Click="UploadToImgur">
+                        <Path Data="{Binding Icons.Upload, Source={StaticResource ServiceLocator}}"
+                              Width="15"
+                              Height="15"
+                              Stretch="Uniform"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

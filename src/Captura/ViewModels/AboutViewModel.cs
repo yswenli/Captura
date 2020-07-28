@@ -1,34 +1,31 @@
-﻿using Captura.ViewModels;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
 using System.Windows.Input;
+using Captura.Loc;
+using Reactive.Bindings;
 
-namespace Captura
+namespace Captura.ViewModels
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AboutViewModel : ViewModelBase
     {
-        public ObservableCollection<CultureInfo> Languages { get; }
+        public ICommand HyperlinkCommand { get; }
 
-        public ICommand HyperlinkCommand { get; } = new DelegateCommand(link =>
-        {
-            Process.Start(link as string);
-        });
+        public static Version Version { get; }
 
         public string AppVersion { get; }
 
-        public AboutViewModel()
+        static AboutViewModel()
         {
-            Languages = TranslationSource.Instance.AvailableCultures;
-
-            AppVersion = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+            Version = ServiceProvider.AppVersion;
         }
-        
-        public CultureInfo Language
+
+        public AboutViewModel(Settings Settings, ILocalizationProvider Loc) : base(Settings, Loc)
         {
-            get => TranslationSource.Instance.CurrentCulture;
-            set => TranslationSource.Instance.CurrentCulture = value;
+            AppVersion = "v" + Version.ToString(3);
+
+            HyperlinkCommand = new ReactiveCommand<string>()
+                .WithSubscribe(M => Process.Start(M));
         }
     }
 }

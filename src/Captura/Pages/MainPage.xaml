@@ -1,0 +1,9 @@
+﻿<Page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      DataContext="{Binding MainViewModel, Source={StaticResource ServiceLocator}}"
+      x:Class="Captura.MainPage">
+    <DockPanel>
+        <Frame Source="HomePage.xaml"
+               Margin="5"/>
+    </DockPanel>
+</Page>
